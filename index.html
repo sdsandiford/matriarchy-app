@@ -271,6 +271,21 @@
     text-transform: uppercase; color: var(--gold); text-align: center;
     margin-bottom: 4px;
   }
+  .lightbox-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 12px; gap: 10px;
+  }
+  .lightbox-nav button {
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 10px 18px;
+    border: 1px solid rgba(201,168,76,0.4); color: var(--gold);
+    background: transparent; cursor: pointer; transition: all 0.2s; flex: 1;
+  }
+  .lightbox-nav button:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .lightbox-save-hint {
+    font-size: 11px; color: rgba(245,240,232,0.4); text-align: center;
+    margin-top: 10px; line-height: 1.6; font-family: 'Jost', sans-serif;
+  }
 
   /* ── ACCESS CODE SCREEN ── */
   #screen-code {
@@ -440,6 +455,11 @@
     <div class="lightbox-actions">
       <a class="btn-download" id="lightbox-download" href="#" download>↓ Save Wallpaper</a>
     </div>
+    <p class="lightbox-save-hint">iPhone: Long-press the image and tap "Add to Photos"<br>Android: Image saves to your Downloads folder</p>
+    <div class="lightbox-nav">
+      <button onclick="navigateLightbox(-1)">← Prev</button>
+      <button onclick="navigateLightbox(1)">Next →</button>
+    </div>
   </div>
 </div>
 
@@ -606,7 +626,15 @@ function filterGallery(key, el) {
 }
 
 // ── LIGHTBOX ──
-function openLightbox(url, label, filename) {
+let allGalleryCards = [];
+let currentLightboxIndex = 0;
+
+function openLightbox(url, label, filename, index) {
+  // Build flat list of all visible cards for navigation
+  allGalleryCards = Array.from(document.querySelectorAll('.gallery-card:not([style*="none"])'))
+    .filter(c => c.closest('.animal-section') ? c.closest('.animal-section').style.display !== 'none' : true);
+  currentLightboxIndex = (index !== undefined) ? index : allGalleryCards.findIndex(c => c.querySelector('img').src === url);
+
   document.getElementById('lightbox-img').src = url;
   document.getElementById('lightbox-label').textContent = label;
   const dl = document.getElementById('lightbox-download');
@@ -614,6 +642,28 @@ function openLightbox(url, label, filename) {
   dl.download = filename;
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function navigateLightbox(dir) {
+  allGalleryCards = Array.from(document.querySelectorAll('.gallery-card'))
+    .filter(c => {
+      const section = c.closest('.animal-section');
+      return !section || section.style.display !== 'none';
+    });
+  currentLightboxIndex = (currentLightboxIndex + dir + allGalleryCards.length) % allGalleryCards.length;
+  const card = allGalleryCards[currentLightboxIndex];
+  if (card) {
+    const img = card.querySelector('img');
+    const onclick = card.getAttribute('onclick');
+    const match = onclick.match(/openLightbox\('([^']+)',\s*'([^']+)',\s*'([^']+)'/);
+    if (match) {
+      document.getElementById('lightbox-img').src = match[1];
+      document.getElementById('lightbox-label').textContent = match[2];
+      const dl = document.getElementById('lightbox-download');
+      dl.href = match[1];
+      dl.download = match[3];
+    }
+  }
 }
 
 function closeLightbox(e) {
@@ -625,6 +675,8 @@ function closeLightbox(e) {
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeLightbox({ target: document.getElementById('lightbox') });
+  if (e.key === 'ArrowLeft') navigateLightbox(-1);
+  if (e.key === 'ArrowRight') navigateLightbox(1);
 });
 </script>
 </body>
