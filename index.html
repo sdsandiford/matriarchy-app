@@ -502,8 +502,10 @@ function checkCode() {
 }
 
 // Allow Enter key on code input
-document.getElementById('code-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') checkCode();
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('code-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkCode();
+  });
 });
 
 // ── FREE PREVIEW ──
