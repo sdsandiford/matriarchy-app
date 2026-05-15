@@ -42,12 +42,14 @@
 
   /* ── SCREENS ── */
   .screen { display: none; }
-  .screen.active { display: flex; }
-  #screen-code.active, #screen-free.active, #screen-gallery.active { display: block; }
+  #screen-gate.active { display: flex; }
+  #screen-code.active { display: flex; }
+  #screen-free.active { display: block; }
+  #screen-gallery.active { display: block; }
 
   /* ── GATE SCREEN ── */
   #screen-gate {
-    min-height: 100vh; display: flex; flex-direction: column;
+    min-height: 100vh; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 48px 32px; text-align: center; position: relative; overflow: hidden;
   }
@@ -272,7 +274,7 @@
 
   /* ── ACCESS CODE SCREEN ── */
   #screen-code {
-    min-height: 80vh; display: flex; flex-direction: column;
+    min-height: 80vh; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 48px 32px; text-align: center;
   }
